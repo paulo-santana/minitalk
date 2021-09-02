@@ -1,0 +1,12 @@
+*.o
+vgcore*
+printf_tester
+compile_commands.json
+main.c
+printf-tester
+a.out
+.cache
+tests
+libftprintf.a
+ft_printf_tester
+printfTester/
