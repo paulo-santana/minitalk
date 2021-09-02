@@ -1,5 +1,5 @@
-./server
-./client
-./obj
+/server
+/client
+/obj
 *.o
 *.a
