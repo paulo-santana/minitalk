@@ -14,10 +14,17 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 SERVER_FILES = server.c
 
+CLIENT_FILES = client.c \
+			   client_utils.c
+
 IFLAGS = -I./libft -I./ft_printf
 LFLAGS = -L./libft -L./ft_printf -lftprintf -lft
 
 SERVER_OBJS = $(addprefix $(OBJ_DIR)/, $(SERVER_FILES:.c=.o))
+CLIENT_OBJS = $(addprefix $(OBJ_DIR)/, $(CLIENT_FILES:.c=.o))
+
+CC = clang
+RM = rm -rf
 
 all: $(NAME)
 
@@ -35,8 +42,20 @@ $(CLIENT): $(CLIENT_OBJS)
 $(OBJ_DIR)/%.o: $(SERVER_DIR)/%.c $(HEADERS)
 	$(CC) $(IFLAGS) -c $< -o $@
 
+$(OBJ_DIR)/%.o: $(CLIENT_DIR)/%.c $(HEADERS)
+	$(CC) $(IFLAGS) -c $< -o $@
+
 $(PRINTF):
 	make -C $(PRINTF_DIR)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
+
+clean:
+	$(RM) $(OBJ_DIR)
+
+fclean: clean
+	$(RM) $(SERVER)
+	$(RM) $(CLIENT)
+
+re: fclean all
