@@ -22,16 +22,17 @@ typedef struct s_message	t_message;
 typedef enum e_stages		t_stages;
 
 enum e_stages {
-	SENDING_CLIENT_PID,
-	SENDING_MESSAGE_LENGTH,
+	SENDING_MESSAGE_LENGTH = 0,
 	SENDING_MESSAGE_BODY,
 };
 
 struct s_message {
 	unsigned int	client_pid;
+	unsigned int	server_pid;
 	unsigned int	length;
 	char			*text;
 	t_stages		current_stage;
+	int				finished;
 };
 
 #endif

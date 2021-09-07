@@ -12,7 +12,8 @@ PRINTF = $(PRINTF_DIR)/libftprintf.a
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SERVER_FILES = server.c
+SERVER_FILES = server.c \
+			   client_pid_listener.c
 
 CLIENT_FILES = client.c \
 			   client_utils.c
