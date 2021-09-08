@@ -31,6 +31,7 @@ enum e_stages {
 
 struct s_message {
 	pid_t			client_pid;
+	int				client_pid_bit;
 	pid_t			server_pid;
 	unsigned int	length;
 	char			*text;

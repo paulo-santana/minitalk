@@ -69,11 +69,10 @@ int	main(int argc, char *argv[])
 	server_pid = parse_server_pid(argv[1]);
 	g_connection = make_message(server_pid, argv[2]);
 	connect(server_pid);
-	ft_printf("my pid\n%032b\n", getpid());
 	while (1)
 	{
-		sleep(1);
-		if (g_connection->is_connected)
+		pause();
+		if (!g_connection->is_connected)
 			break ;
 	}
 	ft_printf("Message sent successfully!\n");
