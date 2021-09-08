@@ -13,7 +13,7 @@ LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 SERVER_FILES = server.c \
-			   client_pid_listener.c
+			   handlers.c
 
 CLIENT_FILES = client.c \
 			   client_utils.c
@@ -24,6 +24,7 @@ LFLAGS = -L./libft -L./ft_printf -lftprintf -lft
 SERVER_OBJS = $(addprefix $(OBJ_DIR)/, $(SERVER_FILES:.c=.o))
 CLIENT_OBJS = $(addprefix $(OBJ_DIR)/, $(CLIENT_FILES:.c=.o))
 
+CFLAGS = -Wall -Werror -Wextra -g3
 CC = clang
 RM = rm -rf
 
@@ -41,10 +42,10 @@ $(CLIENT): $(CLIENT_OBJS)
 	$(CC) $(CLIENT_OBJS) -o $(CLIENT) $(LFLAGS) 
 
 $(OBJ_DIR)/%.o: $(SERVER_DIR)/%.c $(HEADERS)
-	$(CC) $(IFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(CLIENT_DIR)/%.c $(HEADERS)
-	$(CC) $(IFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 $(PRINTF):
 	make -C $(PRINTF_DIR)
@@ -56,6 +57,7 @@ clean:
 	$(RM) $(OBJ_DIR)
 
 fclean: clean
+	make -C $(LIBFT_DIR) fclean
 	$(RM) $(SERVER)
 	$(RM) $(CLIENT)
 

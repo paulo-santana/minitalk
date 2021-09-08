@@ -18,21 +18,24 @@
 #ifndef PROTOCOL_H
 # define PROTOCOL_H
 
-typedef struct s_message	t_message;
+# include <signal.h>
+
+typedef struct s_message	t_connection;
 typedef enum e_stages		t_stages;
 
 enum e_stages {
 	SENDING_MESSAGE_LENGTH = 0,
 	SENDING_MESSAGE_BODY,
+	CLEANING_CONNECTION,
 };
 
 struct s_message {
-	unsigned int	client_pid;
-	unsigned int	server_pid;
+	pid_t			client_pid;
+	pid_t			server_pid;
 	unsigned int	length;
 	char			*text;
 	t_stages		current_stage;
-	int				finished;
+	int				is_connected;
 };
 
 #endif

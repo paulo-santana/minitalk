@@ -19,35 +19,51 @@
 
 int	ft_printf(const char *format, ...);
 
-t_message	*g_message;
-
-static void	handle_for_current_stage(t_message *message, int signal)
+void	clear_connection(t_connection *connection)
 {
-	if (message->current_stage == SENDING_MESSAGE_LENGTH)
-		get_message_len(message, signal);
+	ft_printf("cleaning connection\n");
+	connection->client_pid = 0;
+	free(connection->text);
+	connection->current_stage = SENDING_MESSAGE_LENGTH;
+	connection->length = 0;
+	connection->is_connected = 0;
+}
+
+static void	handle_for_current_stage(t_connection *connection, int signal)
+{
+	if (connection->current_stage == SENDING_MESSAGE_LENGTH)
+		get_message_len(connection, signal);
+	else if (connection->current_stage == CLEANING_CONNECTION)
+		clear_connection(connection);
 	else
-		ft_printf("getting the message\n");
+	{
+		ft_printf("unknown stage\n");
+		return ;
+	}
+	kill(connection->client_pid, SIGUSR1);
 }
 
 void	signal_handler(int signal, siginfo_t *info, void *param)
 {
-	static t_message	message;
+	static t_connection	connection;
 	static int			is_connected;
 
-	if (!is_connected)
+	(void)param;
+	if (!connection.is_connected)
 	{
 		ft_printf("client pid: %d\n", info->si_pid);
-		message.client_pid = info->si_pid;
-		handle_for_current_stage(&message, signal);
+		connection.client_pid = info->si_pid;
+		handle_for_current_stage(&connection, signal);
 		is_connected = 1;
 	}
 	else
 	{
-		if (message.client_pid == info->si_pid)
-		{
-			handle_for_current_stage(&message, signal);
-		}
+		if (connection.client_pid == info->si_pid)
+			handle_for_current_stage(&connection, signal);
+		else
+			ft_printf("message from a different client\n");
 	}
+	usleep(1000);
 }
 
 int	main(void)
@@ -56,7 +72,6 @@ int	main(void)
 	struct sigaction	sa;
 
 	ft_bzero(&sa, sizeof(sa));
-	g_message = ft_calloc(sizeof(t_message), 1);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 	sigaction(SIGUSR1, &sa, NULL);
@@ -66,7 +81,5 @@ int	main(void)
 	while (1)
 	{
 		pause();
-		if (g_message->client_pid)
-			return (0);
 	}
 }

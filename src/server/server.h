@@ -16,6 +16,6 @@
 # include <signal.h>
 # include "../protocol.h"
 
-void	get_message_len(t_message *message, int signal);
+void	get_message_len(t_connection *message, int signal);
 
 #endif
