@@ -25,10 +25,10 @@ int	parse_server_pid(const char *str)
 	int	pid;
 
 	pid = ft_atoi(str);
-	if (pid <= 0)
+	if (pid <= 1)
 	{
-		ft_printf("Error: invalid server pid: %d\n", pid);
-		return (1);
+		ft_printf("[CLIENT] > Error: invalid server pid: %d\n", pid);
+		exit(1);
 	}
 	return (pid);
 }
@@ -40,7 +40,8 @@ static t_connection	*make_message(int server_pid, char *text)
 	message = ft_calloc(1, sizeof(t_connection));
 	if (message == NULL)
 	{
-		ft_putstr_fd("Failed to allocate memory for a message\n", 1);
+		ft_putstr_fd("[CLIENT] > Failed to allocate memory for a message\n", 1);
+		exit(1);
 	}
 	message->client_pid = getpid();
 	message->text = text;
@@ -49,10 +50,16 @@ static t_connection	*make_message(int server_pid, char *text)
 	return (message);
 }
 
-static void	connect(int server_pid)
+static int	connect(int server_pid)
 {
+	if (g_connection->length == 0)
+	{
+		return (0);
+	}
 	register_listener();
-	kill(server_pid, SIGUSR1);
+	if (!kill(server_pid, SIGUSR1))
+		g_connection->is_connected = 1;
+	return (1);
 }
 
 int	main(int argc, char *argv[])
@@ -68,14 +75,10 @@ int	main(int argc, char *argv[])
 	}
 	server_pid = parse_server_pid(argv[1]);
 	g_connection = make_message(server_pid, argv[2]);
-	connect(server_pid);
-	while (1)
-	{
-		pause();
-		if (!g_connection->is_connected)
-			break ;
-	}
-	ft_printf("Message sent successfully!\n");
+	if (connect(server_pid))
+		while (g_connection->is_connected)
+			pause();
+	ft_printf("finished\n");
 	free(g_connection);
 	return (0);
 }

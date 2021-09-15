@@ -33,7 +33,7 @@ all: $(NAME)
 $(NAME): $(LIBFT) $(PRINTF) $(OBJ_DIR) $(SERVER) $(CLIENT)
 
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	mkdir $(OBJ_DIR)
 
 $(SERVER): $(SERVER_OBJS)
 	$(CC) $(SERVER_OBJS) -o $(SERVER) $(LFLAGS)
@@ -54,7 +54,7 @@ $(LIBFT):
 	make -C $(LIBFT_DIR)
 
 clean:
-	$(RM) $(OBJ_DIR)
+	$(RM) $(SERVER_OBJS) $(CLIENT_OBJS)
 
 fclean: clean
 	make -C $(LIBFT_DIR) fclean

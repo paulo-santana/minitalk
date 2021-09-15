@@ -16,28 +16,33 @@
 #include "../protocol.h"
 #include "../../libft/libft.h"
 #include "server.h"
+#include <errno.h>
+#include <string.h>
 
-int	ft_printf(const char *format, ...);
+int		ft_printf(const char *format, ...);
+
+#define SIG_CLEAR 0
 
 void	clear_connection(t_connection *connection)
 {
-	ft_printf("cleaning connection\n");
-	connection->client_pid = 0;
 	free(connection->text);
-	connection->current_stage = SENDING_MESSAGE_LENGTH;
-	connection->length = 0;
-	connection->is_connected = 0;
+	ft_bzero(connection, sizeof(t_connection));
 }
 
 static void	handle_for_current_stage(t_connection *connection, int signal)
 {
+	pid_t	client_pid;
+
 	if (connection->current_stage == SENDING_MESSAGE_LENGTH)
 		get_message_len(connection, signal);
-	else if (connection->current_stage == CLEANING_CONNECTION)
-		clear_connection(connection);
-	else
+	else if (connection->current_stage == SENDING_MESSAGE_BODY)
+		get_message_body(connection, signal);
+	if (connection->current_stage == CLEANING_CONNECTION)
 	{
-		ft_printf("unknown stage\n");
+		client_pid = connection->client_pid;
+		clear_connection(connection);
+		if (kill(client_pid, SIGUSR1))
+			ft_printf("error sending last bit\n");
 		return ;
 	}
 	kill(connection->client_pid, SIGUSR1);
@@ -46,24 +51,24 @@ static void	handle_for_current_stage(t_connection *connection, int signal)
 void	signal_handler(int signal, siginfo_t *info, void *param)
 {
 	static t_connection	connection;
-	static int			is_connected;
 
-	(void)param;
 	if (!connection.is_connected)
 	{
-		ft_printf("client pid: %d\n", info->si_pid);
 		connection.client_pid = info->si_pid;
+		connection.is_connected = 1;
 		handle_for_current_stage(&connection, signal);
-		is_connected = 1;
 	}
 	else
 	{
 		if (connection.client_pid == info->si_pid)
 			handle_for_current_stage(&connection, signal);
 		else
-			ft_printf("message from a different client\n");
+		{
+			ft_printf("[SERVER] > message from a different client\n");
+			clear_connection(&connection);
+		}
 	}
-	usleep(1000);
+	(void)param;
 }
 
 int	main(void)
@@ -72,7 +77,7 @@ int	main(void)
 	struct sigaction	sa;
 
 	ft_bzero(&sa, sizeof(sa));
-	sa.sa_flags = SA_SIGINFO;
+	sa.sa_flags = SA_SIGINFO | SA_RESTART;
 	sa.sa_sigaction = signal_handler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
