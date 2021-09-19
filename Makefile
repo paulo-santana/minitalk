@@ -32,6 +32,8 @@ all: $(NAME)
 
 $(NAME): $(LIBFT) $(PRINTF) $(OBJ_DIR) $(SERVER) $(CLIENT)
 
+bonus: all
+
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
