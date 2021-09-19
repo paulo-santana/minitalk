@@ -78,7 +78,6 @@ int	main(int argc, char *argv[])
 	if (connect(server_pid))
 		while (g_connection->is_connected)
 			pause();
-	ft_printf("finished\n");
 	free(g_connection);
 	return (0);
 }

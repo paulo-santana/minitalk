@@ -24,7 +24,7 @@ LFLAGS = -L./libft -L./ft_printf -lftprintf -lft
 SERVER_OBJS = $(addprefix $(OBJ_DIR)/, $(SERVER_FILES:.c=.o))
 CLIENT_OBJS = $(addprefix $(OBJ_DIR)/, $(CLIENT_FILES:.c=.o))
 
-CFLAGS = -Wall -Werror -Wextra -g3
+CFLAGS = -Wall -Werror -Wextra -O3
 CC = clang
 RM = rm -rf
 
