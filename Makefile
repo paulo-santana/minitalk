@@ -33,7 +33,7 @@ all: $(NAME)
 $(NAME): $(LIBFT) $(PRINTF) $(OBJ_DIR) $(SERVER) $(CLIENT)
 
 $(OBJ_DIR):
-	mkdir $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)
 
 $(SERVER): $(SERVER_OBJS)
 	$(CC) $(SERVER_OBJS) -o $(SERVER) $(LFLAGS)
